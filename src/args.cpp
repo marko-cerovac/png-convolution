@@ -2,12 +2,10 @@
 
 #include <boost/program_options/options_description.hpp>
 #include <cstdlib>
-#include <filesystem>
 #include <iostream>
 #include <thread>
 
 namespace po = boost::program_options;
-namespace fs = std::filesystem;
 
 namespace ar {
 
@@ -17,16 +15,16 @@ namespace ar {
         args_group.add_options()
             (
                 "help,h",
-                "produce help message"
+                "print this help message"
             )
             (
                 "input,i",
-                po::value<fs::path>()->default_value("./input.png"),
+                po::value<std::string>()->default_value("./input.png"),
                 "infput file (PNG)"
             )
             (
                 "output,o",
-                po::value<fs::path>()->default_value("./output.png"),
+                po::value<std::string>()->default_value("./output.png"),
                 "output file (PNG)"
             )
             (
