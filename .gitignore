@@ -1,3 +1,5 @@
-doc/
 builddir/
+.cache/
+doc/
+data/
 clean.sh

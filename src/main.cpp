@@ -1,23 +1,21 @@
 #include <boost/program_options.hpp>
-#include <iostream>
+#include <string>
 
+#include "image/BMPImage.h"
 #include "args.h"
-#include "Kernel.h"
 
 boost::program_options::variables_map args;
 
 int main(int argc, char* argv[]) {
-    args = ar::parse_cmdline_args(argc, argv);
 
-    ar::Kernel<double, 3> kernel({1, 2, 3, 4, 5, 6, 7, 8, 9});
+    auto args = ar::parse_cmdline_args(argc, argv);
 
-    for (const auto element : kernel) {
-        std::cout << element << ", ";
-    }
+    std::string input_file = args.at("input").as<std::string>();
+    std::string output_file = args.at("output").as<std::string>();
 
-    std::cout << std::endl;
+    image::BMPImage image(input_file);
 
-    std::cout << "The first element is: " << kernel.at<0, 0>() << std::endl;
+    image.save(output_file);
 
     return 0;
 }
