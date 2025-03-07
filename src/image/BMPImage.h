@@ -35,6 +35,6 @@ namespace image {
 
         size_t width;
         size_t height;
-        std::unique_ptr<std::unique_ptr<Pixel[]>[]> bitmap;
+        std::unique_ptr<Pixel[]> bitmap;
     };
 }  // namespace image

@@ -22,6 +22,9 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    image[0, 0] = {0xFF, 0x00, 0xFF};
+    image[image.get_width() - 1, image.get_height() - 1] = {0x00, 0x00, 0xFF};
+
     image.save(output_file);
 
     return 0;
