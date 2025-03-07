@@ -3,3 +3,4 @@ builddir/
 doc/
 data/
 clean.sh
+run.sh

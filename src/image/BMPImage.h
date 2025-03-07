@@ -21,6 +21,9 @@ namespace image {
         void load(const std::string& file_path);
         void save(const std::string& file_path);
 
+        inline size_t get_width() const noexcept { return width; }
+        inline size_t get_height() const noexcept { return height; }
+
         Pixel& operator[](size_t width, size_t height);
         const Pixel& operator[](size_t width, size_t height) const;
 
