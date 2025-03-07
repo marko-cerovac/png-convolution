@@ -1,0 +1,29 @@
+#!/bin/env nu
+
+use std/dirs
+
+def main [
+    command: string # build, run. clean, show
+] {
+    match $command {
+        "build" => {
+            compile
+        }
+        "run" => {
+            compile
+            target/debug/convolution -i data/input.bmp -o data/output.bmp
+        }
+        "show" => {
+            gwenview data/output.bmp
+        }
+        "clean" => {
+            rm data/output.bmp
+        }
+    }
+}
+
+def compile [] {
+    dirs add target/debug
+    meson compile
+    dirs drop
+}
