@@ -2,8 +2,45 @@
 
 use std/dirs
 
+# export-env {
+#     load-env {
+#         PROJECT_ROOT: /home/marko/Code/Projects/ar/convolution
+#         DEBUG_TARGET_DIR: /home/marko/Code/Projects/ar/convolution/target/debug
+#         RELEASE_TARGET_DIR: /home/marko/Code/Projects/ar/convolution/target/release
+#     }
+# }
+#
+# export def build [] {
+#     dirs add $env.DEBUG_TARGET_DIR
+#     meson compile
+#     dirs drop
+# }
+#
+# export def run [] {
+#     build
+#
+#     let executable = $env.DEBUG_TARGET_DIR | path join convolution
+#     let input      = $env.PROJECT_ROOT | path join data/input.bmp
+#     let output     = $env.PROJECT_ROOT | path join data/output.bmp
+#
+#     dirs add $env.PROJECT_ROOT
+#     run-external $"($executable)" "-i data/input.bmp" "-o data/output.bmp"
+# }
+#
+# export def time [] {
+#     timeit { run }
+# }
+#
+# export def show [] {
+#     gwenview ( $env.PROJECT_ROOT | path join data/output.bmp )
+# }
+#
+# export def clean [] {
+#     rm ( $env.PROJECT_ROOT | path join data/output.bmp )
+# }
+
 def main [
-    command: string # build, run. clean, show
+    command: string # build, run. clean, show, time
 ] {
     match $command {
         "build" => {
@@ -12,6 +49,9 @@ def main [
         "run" => {
             compile
             target/debug/convolution -i data/input.bmp -o data/output.bmp
+        }
+        "time" => {
+            timeit { target/debug/convolution -i data/input.bmp -o data/output.bmp }
         }
         "show" => {
             gwenview data/output.bmp
