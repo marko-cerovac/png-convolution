@@ -1,1 +1,1 @@
-# PNG image convolution - WIP
+# BMP image convolution - WIP
