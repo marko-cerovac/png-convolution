@@ -13,13 +13,13 @@ namespace image {
     BMPImage::BMPImage(size_t width, size_t height) : width(width), height(height) {
         assert(height > 0 && width > 0);
 
-        bitmap = std::make_unique<Pixel[]>(width * height);
+        bitmap = std::make_unique<PixelHex[]>(width * height);
     }
 
     BMPImage::BMPImage(const std::string& filepath) { load(filepath); }
 
     BMPImage::BMPImage(const BMPImage& other) : width(other.width), height(other.height) {
-        bitmap = std::make_unique<Pixel[]>(width * height);
+        bitmap = std::make_unique<PixelHex[]>(width * height);
 
         for (size_t i = 0; i < width * height; i++) {
             bitmap[i] = other.bitmap[i];
@@ -40,7 +40,7 @@ namespace image {
 
         height = other.height;
         width  = other.width;
-        bitmap = std::make_unique<Pixel[]>(width * height);
+        bitmap = std::make_unique<PixelHex[]>(width * height);
 
         for (size_t i = 0; i < width * height; i++) {
             bitmap[i] = other.bitmap[i];
@@ -67,7 +67,7 @@ namespace image {
         std::ifstream file(filepath, std::ios::binary);
 
         if (!file.is_open()) {
-            throw utils::FileNotFoundException("Failed to open input file.");
+            throw utils::FileNotFoundException("Failed to open input file: " + filepath);
         }
 
         // read the BMP file header
@@ -89,7 +89,7 @@ namespace image {
 
         width  = info_header.bitmap_width;
         height = info_header.bitmap_height;
-        bitmap = std::make_unique<Pixel[]>(width * height);
+        bitmap = std::make_unique<PixelHex[]>(width * height);
 
         // go to the bitmap in the file
         file.seekg(header.bitmap_offset);
@@ -101,7 +101,7 @@ namespace image {
         for (int y = height - 1; y >= 0; y--) {
         /* for (int y = 0; y < height; y++) { */
             for (int x = 0; x < width; x++) {
-                file.read(reinterpret_cast<char*>(&bitmap[y * height + x]), sizeof(Pixel));
+                file.read(reinterpret_cast<char*>(&bitmap[y * height + x]), sizeof(PixelHex));
             }
             // skip padding
             file.seekg(static_cast<size_t>(file.tellg()) + padding);
@@ -150,7 +150,7 @@ namespace image {
         for (int y = height - 1; y >= 0; --y) {
         /* for (int y = 0; y < height; y++) { */
             for (int x = 0; x < width; x++) {
-                file.write(reinterpret_cast<char*>(&bitmap[y * height + x]), sizeof(Pixel));
+                file.write(reinterpret_cast<char*>(&bitmap[y * height + x]), sizeof(PixelHex));
             }
 
             // write padding bites
@@ -163,7 +163,7 @@ namespace image {
         file.close();
     }
 
-    Pixel& BMPImage::operator[](size_t width, size_t height) {
+    PixelHex& BMPImage::operator[](size_t width, size_t height) {
         if (width > this->width || height > this->height) {
             throw std::out_of_range("Attempting to index a pixel out of bounds.");
         }
@@ -172,7 +172,7 @@ namespace image {
         return bitmap[width * this->width + height];
     }
 
-    const Pixel& BMPImage::operator[](size_t width, size_t height) const {
+    const PixelHex& BMPImage::operator[](size_t width, size_t height) const {
         if (width > this->width || height > this->height) {
             throw std::out_of_range("Attempting to index a pixel out of bounds.");
         }

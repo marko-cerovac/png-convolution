@@ -24,8 +24,8 @@ namespace image {
         inline size_t get_width() const noexcept { return width; }
         inline size_t get_height() const noexcept { return height; }
 
-        Pixel& operator[](size_t width, size_t height);
-        const Pixel& operator[](size_t width, size_t height) const;
+        PixelHex& operator[](size_t width, size_t height);
+        const PixelHex& operator[](size_t width, size_t height) const;
 
       private:
 
@@ -35,6 +35,6 @@ namespace image {
 
         size_t width;
         size_t height;
-        std::unique_ptr<Pixel[]> bitmap;
+        std::unique_ptr<PixelHex[]> bitmap;
     };
 }  // namespace image
