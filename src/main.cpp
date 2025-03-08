@@ -4,7 +4,7 @@
 
 #include "args.h"
 #include "image/BMPImage.h"
-#include "src/Kernel.h"
+#include "kernel/Kernel.h"
 #include "src/image/Pixel.h"
 
 boost::program_options::variables_map args;
@@ -16,9 +16,9 @@ int main(int argc, char* argv[]) {
     //    TESTING KERNEL PARSING AND OPERATIONS
     // -------------------------------------------
 
-    auto kernel = ar::Kernel<float,3>::parse(args.at("kernel").as<std::string>());
+    auto kernel = ar::StaticMatrix<float,3>::parse(args.at("kernel").as<std::string>());
 
-    ar::Kernel<image::PixelNorm, 3> bitmap = {
+    ar::StaticMatrix<image::PixelNorm, 3> bitmap = {
         {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 0.0, 0.0},
         {1.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0},
         {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 0.0, 0.0}

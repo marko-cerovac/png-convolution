@@ -4,19 +4,19 @@
 #include <initializer_list>
 #include <string>
 
-#include "utils/exceptions.h"
-#include "utils/utils.h"
+#include "../utils/exceptions.h"
+#include "../utils/utils.h"
 
 namespace ar {
     template <typename T, size_t N>
-    class Kernel {
+    class StaticMatrix {
       public:
 
         static_assert(N != 0, "Kernel dimension must be a non-zero value.");
 
-        Kernel() = default;
+        StaticMatrix() = default;
 
-        Kernel(const std::initializer_list<T>& list) {
+        StaticMatrix(const std::initializer_list<T>& list) {
             unsigned int i = 0;
             for (const auto& param : list) {
                 matrix[i++] = param;
@@ -51,14 +51,14 @@ namespace ar {
     };
 
     template <size_t N>
-    class Kernel<float, N> {
+    class StaticMatrix<float, N> {
       public:
 
         static_assert(N != 0, "Kernel dimension must be a non-zero value.");
 
-        Kernel() = default;
+        StaticMatrix() = default;
 
-        Kernel(const std::initializer_list<float>& list) {
+        StaticMatrix(const std::initializer_list<float>& list) {
             unsigned int i = 0;
             for (const auto& param : list) {
                 matrix[i++] = param;
@@ -87,7 +87,7 @@ namespace ar {
         constexpr inline auto end() { return matrix.end(); }
         constexpr inline auto cend() const { return matrix.cend(); }
 
-        static Kernel<float, N> parse(const std::string& input) {
+        static StaticMatrix<float, N> parse(const std::string& input) {
             auto params = utils::split(input);
 
             if (params.size() != N * N) {
@@ -95,7 +95,7 @@ namespace ar {
                     "Parsing error: number of parameters doesn't match kernel dimentions");
             }
 
-            Kernel<float, N> result;
+            StaticMatrix<float, N> result;
 
             size_t i = 0;
             for (const auto& param : params) {
