@@ -13,13 +13,13 @@ namespace image {
     BMPImage::BMPImage(size_t width, size_t height) : width(width), height(height) {
         assert(height > 0 && width > 0);
 
-        bitmap = std::make_unique<PixelHex[]>(width * height);
+        bitmap = std::make_unique<PixelNorm[]>(width * height);
     }
 
     BMPImage::BMPImage(const std::string& filepath) { load(filepath); }
 
     BMPImage::BMPImage(const BMPImage& other) : width(other.width), height(other.height) {
-        bitmap = std::make_unique<PixelHex[]>(width * height);
+        bitmap = std::make_unique<PixelNorm[]>(width * height);
 
         for (size_t i = 0; i < width * height; i++) {
             bitmap[i] = other.bitmap[i];
@@ -40,7 +40,7 @@ namespace image {
 
         height = other.height;
         width  = other.width;
-        bitmap = std::make_unique<PixelHex[]>(width * height);
+        bitmap = std::make_unique<PixelNorm[]>(width * height);
 
         for (size_t i = 0; i < width * height; i++) {
             bitmap[i] = other.bitmap[i];
@@ -89,19 +89,19 @@ namespace image {
 
         width  = info_header.bitmap_width;
         height = info_header.bitmap_height;
-        bitmap = std::make_unique<PixelHex[]>(width * height);
+        bitmap = std::make_unique<PixelNorm[]>(width * height);
 
         // go to the bitmap in the file
         file.seekg(header.bitmap_offset);
 
         // calculate the padding
-        /* size_t padding = 4 - (width * 3 % 4); */
-        size_t padding = ((width * info_header.bits_per_pix + 31) / 32) * 4 - (width * 3);
+        int padding = ((width * info_header.bits_per_pix + 31) / 32) * 4 - (width * 3);
 
-        for (int y = height - 1; y >= 0; y--) {
-        /* for (int y = 0; y < height; y++) { */
-            for (int x = 0; x < width; x++) {
-                file.read(reinterpret_cast<char*>(&bitmap[y * height + x]), sizeof(PixelHex));
+        PixelHex placeholder;
+        for (long int y = height - 1; y >= 0; y--) {
+            for (long int x = 0; x < width; x++) {
+                file.read(reinterpret_cast<char*>(&placeholder), sizeof(PixelHex));
+                bitmap[y * height + x] = static_cast<PixelNorm>(placeholder);
             }
             // skip padding
             file.seekg(static_cast<size_t>(file.tellg()) + padding);
@@ -143,14 +143,16 @@ namespace image {
         file.write(reinterpret_cast<char*>(&info_header), sizeof(info_header));
 
         // calculate the padding
-        /* int padding = 4 - (width * 3 % 4); */
-        size_t padding = ((width * info_header.bits_per_pix + 31) / 32) * 4 - (width * 3);
+        int padding = ((width * info_header.bits_per_pix + 31) / 32) * 4 - (width * 3);
 
+        width  = info_header.bitmap_width;
+        height = info_header.bitmap_height;
+        PixelHex placeholder;
         // write the pixel data
-        for (int y = height - 1; y >= 0; --y) {
-        /* for (int y = 0; y < height; y++) { */
-            for (int x = 0; x < width; x++) {
-                file.write(reinterpret_cast<char*>(&bitmap[y * height + x]), sizeof(PixelHex));
+        for (long int y = height - 1; y >= 0; --y) {
+            for (long int x = 0; x < width; x++) {
+                placeholder = static_cast<PixelHex>(bitmap[y * height + x]);
+                file.write(reinterpret_cast<char*>(&placeholder), sizeof(PixelHex));
             }
 
             // write padding bites
@@ -163,7 +165,7 @@ namespace image {
         file.close();
     }
 
-    PixelHex& BMPImage::operator[](size_t width, size_t height) {
+    PixelNorm& BMPImage::operator[](size_t width, size_t height) {
         if (width > this->width || height > this->height) {
             throw std::out_of_range("Attempting to index a pixel out of bounds.");
         }
@@ -172,7 +174,7 @@ namespace image {
         return bitmap[width * this->width + height];
     }
 
-    const PixelHex& BMPImage::operator[](size_t width, size_t height) const {
+    const PixelNorm& BMPImage::operator[](size_t width, size_t height) const {
         if (width > this->width || height > this->height) {
             throw std::out_of_range("Attempting to index a pixel out of bounds.");
         }
