@@ -2,9 +2,10 @@
 #include <iostream>
 #include <string>
 
-#include "args.h"
+#include "utils/args.h"
 #include "image/BMPImage.h"
 #include "kernel/Kernel.h"
+#include "kernel/PixelWindow.h"
 #include "src/image/Pixel.h"
 
 boost::program_options::variables_map args;
@@ -16,21 +17,16 @@ int main(int argc, char* argv[]) {
     //    TESTING KERNEL PARSING AND OPERATIONS
     // -------------------------------------------
 
-    auto kernel = ar::StaticMatrix<float,3>::parse(args.at("kernel").as<std::string>());
+    auto kernel = ar::Kernel<3>::parse(args.at("kernel").as<std::string>());
 
-    ar::StaticMatrix<image::PixelNorm, 3> bitmap = {
-        {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 0.0, 0.0},
-        {1.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0},
-        {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 0.0, 0.0}
+    ar::PixelWindow<3> bitmap = {
+        {0.0, 1.0, 0.0}, {0.5, 0.0, 0.0}, {0.0, 1.0, 0.0},
+        {0.5, 0.0, 0.0}, {0.0, 0.0, 5.0}, {0.5, 0.0, 0.0},
+        {0.0, 1.0, 0.0}, {0.5, 0.0, 0.0}, {0.0, 1.0, 0.0}
     };
 
-    image::PixelNorm result = bitmap.at<1, 1>();
+    image::PixelNorm result = kernel.convolve(bitmap);
 
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            result += kernel(i, j) * bitmap(i, j);
-        }
-    }
     std::cout << result.blue << "\t" << result.green << "\t" << result.red << std::endl;
 
     // --------------------------------------------

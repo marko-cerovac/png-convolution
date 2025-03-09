@@ -53,6 +53,18 @@ namespace ar {
         constexpr inline auto end() { return matrix.end(); }
         constexpr inline auto cend() const { return matrix.cend(); }
 
+        image::PixelNorm convolve(const PixelWindow<N>& window) const {
+            image::PixelNorm result;
+
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < N; j++) {
+                    result += matrix[j * N + i] * window(i, j);
+                }
+            }
+
+            return result;
+        }
+
         static StaticMatrix<float, N> parse(const std::string& input) {
             auto params = utils::split(input);
 
