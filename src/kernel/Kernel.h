@@ -31,9 +31,8 @@ namespace ar {
             }
         }
 
-        float operator()(size_t n, size_t m) const { return matrix[n * N + m]; }
-
-        float& operator()(size_t n, size_t m) { return matrix[n * N + m]; }
+        float operator[](size_t n, size_t m) const { return matrix[n * N + m]; }
+        float& operator[](size_t n, size_t m) { return matrix[n * N + m]; }
 
         template <size_t n, size_t m>
         constexpr float at() const {
@@ -49,16 +48,15 @@ namespace ar {
 
         constexpr inline auto begin() { return matrix.begin(); }
         constexpr inline auto cbegin() const { return matrix.cbegin(); }
-
         constexpr inline auto end() { return matrix.end(); }
         constexpr inline auto cend() const { return matrix.cend(); }
 
         image::PixelNorm convolve(const PixelWindow<N>& window) const {
-            image::PixelNorm result;
+            image::PixelNorm result = {0.0, 0.0, 0.0};
 
             for (int i = 0; i < N; i++) {
                 for (int j = 0; j < N; j++) {
-                    result += matrix[j * N + i] * window(i, j);
+                    result += matrix[j * N + i] * window[i, j];
                 }
             }
 

@@ -19,9 +19,8 @@ namespace ar {
             }
         }
 
-        T operator()(size_t n, size_t m) const { return matrix[n * N + m]; }
-
-        T& operator()(size_t n, size_t m) { return matrix[n * N + m]; }
+        T operator[](size_t n, size_t m) const { return matrix[n * N + m]; }
+        T& operator[](size_t n, size_t m) { return matrix[n * N + m]; }
 
         template <size_t n, size_t m>
         constexpr T at() const {
@@ -37,7 +36,6 @@ namespace ar {
 
         constexpr inline auto begin() { return matrix.begin(); }
         constexpr inline auto cbegin() const { return matrix.cbegin(); }
-
         constexpr inline auto end() { return matrix.end(); }
         constexpr inline auto cend() const { return matrix.cend(); }
 
