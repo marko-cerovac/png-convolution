@@ -48,7 +48,9 @@ def main [
         }
         "run" => {
             compile
-            target/debug/convolution -i data/input.bmp -o data/output.bmp
+            # target/debug/convolution -i data/input.bmp -o data/output.bmp -k 0,-1,0,-1,5,-1,0,-1,0
+            # target/debug/convolution -i data/input.bmp -o data/output.bmp -k 0.0625,0.125,0.0625,0.125,0.25,0.125,0.0625,0.125,0.0625
+            target/debug/convolution -i data/output.bmp -o data/output.bmp -k 0.0625,0.125,0.0625,0.125,0.25,0.125,0.0625,0.125,0.0625
         }
         "time" => {
             timeit { target/debug/convolution -i data/input.bmp -o data/output.bmp }

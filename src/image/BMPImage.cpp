@@ -8,6 +8,7 @@
 #include "../utils/exceptions.h"
 #include "Pixel.h"
 #include "headers.h"
+#include "src/kernel/PixelWindow.h"
 
 namespace image {
     BMPImage::BMPImage(size_t width, size_t height) : width(width), height(height) {
@@ -182,4 +183,51 @@ namespace image {
         /* return bitmap[height * this->height + width]; */
         return bitmap[width * this->width + height];
     }
+
+    ar::PixelWindow<3> BMPImage::get_window(size_t x, size_t y) const {
+        // w - width
+        // h - height
+        //
+        // -------------------------------------------------------------
+        // | i - w - 1 |   i - w   | i - w + 1 |           |   w - 1   |
+        // |-----------+-----------+-----------+-----------+-----------|
+        // |   i - 1   |     i     |   i + 1   |           |           |
+        // |-----------+-----------+-----------+-----------+-----------|
+        // | i + w - 1 |   i + w   | i + w + 1 |           |           |
+        // |-----------+-----------+-----------+-----------+-----------|
+        // |           |           |           |           |           |
+        // |-----------+-----------+-----------+-----------+-----------|
+        // |     h     |           |           |           |   w * h   |
+        // -------------------------------------------------------------
+        if (x >= width - 1 || y >= height - 1 || x < 1 || y < 1) {
+            throw std::out_of_range("Pixel windows for outer edge or beyond can not be created");
+        }
+
+        auto i = x * width + y;
+
+        // clang-format off
+        ar::PixelWindow<3> result = {
+            bitmap[i - width - 1], bitmap[i - width], bitmap[i - width + 1],
+            bitmap[i - 1],         bitmap[i],         bitmap[i + 1],
+            bitmap[i + width - 1], bitmap[i + width], bitmap[i + width + 1],
+        };
+        // clang-format on
+
+        return result;
+    }
+
+    BMPImage BMPImage::apply_convolution(ar::Kernel<3> kernel) const {
+        BMPImage result(this->width, this->height);
+        ar::PixelWindow<3> window;
+
+        for (auto i = 1; i < width - 1; i++) {
+            for (auto j = 1; j < height - 1; j++) {
+                window       = get_window(i, j);
+                result[i, j] = kernel.convolve(window);
+            }
+        }
+
+        return result;
+    }
+
 }  // namespace image

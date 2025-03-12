@@ -4,6 +4,8 @@
 #include <string>
 
 #include "Pixel.h"
+#include "../kernel/PixelWindow.h"
+#include "../kernel/Kernel.h"
 
 namespace image {
 
@@ -26,6 +28,13 @@ namespace image {
 
         PixelNorm& operator[](size_t width, size_t height);
         const PixelNorm& operator[](size_t width, size_t height) const;
+
+        /// Returns a 3x3 window of pixels given the x and y coordinates
+        /// of the middle pixel.
+        /// Pixels along the edges shoul'd not be used.
+        ar::PixelWindow<3> get_window(size_t width, size_t height) const;
+
+        BMPImage apply_convolution(ar::Kernel<3> kernel) const;
 
       private:
 
