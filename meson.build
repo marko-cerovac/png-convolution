@@ -9,7 +9,7 @@ boost_dep = dependency('boost', modules : ['program_options'])
 src_dir = 'src'
 sources = files(
   src_dir + '/main.cpp',
-  src_dir + '/args.cpp',
+  src_dir + '/utils/args.cpp',
   src_dir + '/utils/utils.cpp',
   src_dir + '/image/Pixel.cpp',
   src_dir + '/image/BMPImage.cpp'
