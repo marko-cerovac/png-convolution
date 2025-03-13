@@ -1,6 +1,5 @@
-builddir/
 .cache/
 doc/
 data/
-clean.sh
-run.sh
+target/
+compile_commands.json
