@@ -1,5 +1,7 @@
 #include "BMPImage.h"
 
+#include <omp.h>
+
 #include <cassert>
 #include <fstream>
 #include <stdexcept>
@@ -167,6 +169,7 @@ namespace image {
     }
 
     PixelNorm& BMPImage::operator[](size_t width, size_t height) {
+        [[unlikely]]
         if (width > this->width || height > this->height) {
             throw std::out_of_range("Attempting to index a pixel out of bounds.");
         }
@@ -176,6 +179,7 @@ namespace image {
     }
 
     const PixelNorm& BMPImage::operator[](size_t width, size_t height) const {
+        [[unlikely]]
         if (width > this->width || height > this->height) {
             throw std::out_of_range("Attempting to index a pixel out of bounds.");
         }
@@ -187,7 +191,7 @@ namespace image {
     ar::PixelWindow<3> BMPImage::get_window(size_t x, size_t y) const {
         // w - width
         // h - height
-        //
+        // i - current pixel
         // -------------------------------------------------------------
         // | i - w - 1 |   i - w   | i - w + 1 |           |   w - 1   |
         // |-----------+-----------+-----------+-----------+-----------|
@@ -199,6 +203,7 @@ namespace image {
         // |-----------+-----------+-----------+-----------+-----------|
         // |     h     |           |           |           |   w * h   |
         // -------------------------------------------------------------
+        [[unlikely]]
         if (x >= width - 1 || y >= height - 1 || x < 1 || y < 1) {
             throw std::out_of_range("Pixel windows for outer edge or beyond can not be created");
         }
@@ -219,9 +224,11 @@ namespace image {
     BMPImage BMPImage::apply_convolution(ar::Kernel<3> kernel) const {
         BMPImage result(this->width, this->height);
         ar::PixelWindow<3> window;
+        int i, j;
 
-        for (auto i = 1; i < width - 1; i++) {
-            for (auto j = 1; j < height - 1; j++) {
+        [[omp::directive(parallel for private(j, window) shared(result))]]
+        for (i = 1; i < width - 1; i++) {
+            for (j = 1; j < height - 1; j++) {
                 window       = get_window(i, j);
                 result[i, j] = kernel.convolve(window);
             }

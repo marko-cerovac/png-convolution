@@ -1,6 +1,8 @@
 #include <boost/program_options.hpp>
-/* #include <iostream> */
+#include <iostream>
 #include <string>
+#include <chrono>
+#include <omp.h>
 
 #include "image/BMPImage.h"
 #include "kernel/Kernel.h"
@@ -61,7 +63,24 @@ int main(int argc, char* argv[]) {
     std::string output_file = args.at("output").as<std::string>();
 
     image::BMPImage image(input_file);
+
+    std::cout << "Warming up..." << std::endl;
+    for (int i = 0; i < 5; i++) {
+        image.apply_convolution(kernel);
+    }
+
+    auto start_time = std::chrono::high_resolution_clock::now();
     auto result = image.apply_convolution(kernel);
+    std::cout << "Calculating..." << std::endl;
+
+    for (int i = 0; i < 49; i++) {
+        result = result.apply_convolution(kernel);
+    }
+
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    std::cout << "Elapsed time for 50 iterations: " << elapsed.count() << "ms" << std::endl;
+
     result.save(output_file);
 
     return 0;
